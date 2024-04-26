@@ -1,7 +1,7 @@
 $(document).ready(function () {
     let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
 
-    console.log('jquery')
+    // console.log('jquery')
     function performSearch() {
         let searchType = $('#toggleSearchTypeButton').data('search-type');
         let search = $('#search').val();
@@ -21,7 +21,7 @@ $(document).ready(function () {
                         template += `<td>${task['name']} </td>`;
                         template += `<td>${task['description']} </td>`;
                         template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
-                        template += `<td ><button data-id="${task['id']}" class="edit btn btn-sm btn-success">Edit</button><button data-id="${task['id']}" class="delete btn btn-sm btn-danger">Delete</button> </td></tr>`;
+                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success d-inline col-5 mr-5">Edit</button><button data-id="${task['id']}" class="delete btn btn-sm btn-danger d-inline col-6">Delete</button> </td></tr>`;
                     });
                 } catch (error) {
                     template = '';
@@ -36,7 +36,13 @@ $(document).ready(function () {
         $('#task-form').attr('data-task-id', '');
         $('#type').find('option:selected').prop('selected', false);
         $('#type').find('option:first').prop('selected', true);
+        clearNameErrors();
+        clearDescriptionErrors();
     }
+
+    $('#closeModal').on('click', function () {
+        clearForm();
+    })
 
     clearForm();
     performSearch();
@@ -46,23 +52,46 @@ $(document).ready(function () {
         performSearch();
     });
 
+    function clearNameErrors() {
+        $('#nameErrors').css('display', 'none');
+        $('#nameErrors').html('')
+    }
+    function clearDescriptionErrors() {
+        $('#descriptionErrors').css('display', 'none');
+        $('#descriptionErrors').html('')
+    }
     $('#task-form').submit(function (event) {
         event.preventDefault();
+        if (($('#name').val()).length <= 3) {
+            // console.log(($('#name').val()))
+            $('#nameErrors').css('display', 'block');
+            $('#nameErrors').html('Name field must have a length greater than 3')
 
-        let data = { name: $('#name').val(), description: $('#description').val(), type: $('#type').val(), id: $(this).attr('data-task-id') };
-        // console.log(data)
-
-        $.ajax({
-            url: 'task-save.php',
-            type: 'POST',
-            data: { data },
-            success: function (res) {
-                // console.log(res)
-                performSearch();
-                clearForm();
-                myModal.hide();
-            }
-        })
+        } else {
+            clearNameErrors();
+        }
+        if (($('#description').val()).length <= 5) {
+            // console.log(($('#description').val()).length)
+            $('#descriptionErrors').css('display', 'block');
+            $('#descriptionErrors').html('Description field must have a length greater than 5')
+        }else{
+            clearDescriptionErrors();
+        }
+        if (($('#name').val()).length > 3 && ($('#description').val()).length > 5) {
+            let data = { name: $('#name').val(), description: $('#description').val(), type: $('#type').val(), id: $(this).attr('data-task-id') };
+            // console.log(data)
+            $.ajax({
+                url: 'task-save.php',
+                type: 'POST',
+                data: { data },
+                success: function (res) {
+                    // console.log(res)
+                    performSearch();
+                    clearForm();
+                    myModal.hide();
+                }
+            })
+        }
     })
     $(document).on('click', 'input[type="checkbox"]', function () {
         // console.log(checkboxId)
@@ -78,8 +107,6 @@ $(document).ready(function () {
             data: { data },
             success: function (res) {
                 // console.log(res)
-
-
             }
         })
     })

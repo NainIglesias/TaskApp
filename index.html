@@ -13,25 +13,24 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a href="#" class="navbar-brand"> <h1>Task App</h1></a>
-          <li class="nav-item">
-            <form class="form-inline d-flex gap-2 my-2 my-lg-0">
-              <input
-                type="search"
-                id="search"
-                class="form-control mr-sm-2"
-                placeholder="Search Your Task"
-              />
-              <button
-                id="toggleSearchTypeButton"
-                data-search-type="name"
-                class="btn btn-success my-2 my-sm-0 ml-3"
-                type="submit"
-              >
-                By Name
-              </button>
-            </form>
-          </li>
-        
+        <li class="nav-item">
+          <form class="form-inline d-flex gap-2 my-2 my-lg-0">
+            <input
+              type="search"
+              id="search"
+              class="form-control mr-sm-2"
+              placeholder="Search Your Task"
+            />
+            <button
+              id="toggleSearchTypeButton"
+              data-search-type="name"
+              class="btn btn-success my-2 my-sm-0 ml-3"
+              type="submit"
+            >
+              By Name
+            </button>
+          </form>
+        </li>
 
         <li class="nav-item">
           <!-- Button to trigger modal -->
@@ -51,6 +50,7 @@
                 <div class="modal-header">
                   <h5 class="modal-title" id="taskModalLabel">Task Form</h5>
                   <button
+                    id="closeModal"
                     type="button"
                     class="btn-close close"
                     data-dismiss="modal"
@@ -60,6 +60,11 @@
                 <div class="modal-body">
                   <form id="task-form" data-task-id="">
                     <div class="form-group mb-3">
+                      <div
+                        id="nameErrors"
+                        style="display: none"
+                        class="alert alert-danger"
+                      ></div>
                       <input
                         type="text"
                         id="name"
@@ -68,6 +73,11 @@
                       />
                     </div>
                     <div class="form-group mb-3">
+                      <div
+                        id="descriptionErrors"
+                        style="display: none"
+                        class="alert alert-danger"
+                      ></div>
                       <textarea
                         id="description"
                         cols="30"

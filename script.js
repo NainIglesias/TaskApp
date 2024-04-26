@@ -74,7 +74,7 @@ $(document).ready(function () {
             // console.log(($('#description').val()).length)
             $('#descriptionErrors').css('display', 'block');
             $('#descriptionErrors').html('Description field must have a length greater than 5')
-        }else{
+        } else {
             clearDescriptionErrors();
         }
         if (($('#name').val()).length > 3 && ($('#description').val()).length > 5) {
@@ -152,5 +152,62 @@ $(document).ready(function () {
     $('#buttonModal').on('click', function () {
         myModal.toggle();
 
+    })
+
+    $('#filterById').on('click', function () {
+        let type = $(this).attr('type');
+        type == 'desc' ? $(this).attr('type', 'asc') : $(this).attr('type', 'desc');
+        console.log(type)
+        // console.log(type.type)
+        $.ajax({
+            url: 'task-searchById.php',
+            type: 'POST',
+            data: { type: type },
+            success: function (res) {
+                let template = '';
+                try {
+                    let tasks = JSON.parse(res);
+                    tasks.forEach(task => {
+                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
+                        template += `<td>${task['name']} </td>`;
+                        template += `<td>${task['description']} </td>`;
+                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
+                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success d-inline col-5 mr-5">Edit</button><button data-id="${task['id']}" class="delete btn btn-sm btn-danger d-inline col-6">Delete</button> </td></tr>`;
+                    });
+                } catch (error) {
+                    template = '';
+                    console.error(error)
+                }
+                $('#tasks').html(template);
+            }
+        })
+    })
+    $('#filterByName').on('click', function () {
+        let type = $(this).attr('type');
+        type == 'desc' ? $(this).attr('type', 'asc') : $(this).attr('type', 'desc');
+        console.log(type)
+        // console.log(type.type)
+        $.ajax({
+            url: 'task-searchByName.php',
+            type: 'POST',
+            data: { type: type },
+            success: function (res) {
+                let template = '';
+                try {
+                    let tasks = JSON.parse(res);
+                    tasks.forEach(task => {
+                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
+                        template += `<td>${task['name']} </td>`;
+                        template += `<td>${task['description']} </td>`;
+                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
+                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success d-inline col-5 mr-5">Edit</button><button data-id="${task['id']}" class="delete btn btn-sm btn-danger d-inline col-6">Delete</button> </td></tr>`;
+                    });
+                } catch (error) {
+                    template = '';
+                    console.error(error)
+                }
+                $('#tasks').html(template);
+            }
+        })
     })
 })

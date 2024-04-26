@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
+
     console.log('jquery')
     function performSearch() {
         let searchType = $('#toggleSearchTypeButton').data('search-type');
@@ -19,7 +21,7 @@ $(document).ready(function () {
                         template += `<td>${task['name']} </td>`;
                         template += `<td>${task['description']} </td>`;
                         template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
-                        template += `<td><button data-id="${task['id']}" class="edit">Edit</button><button data-id="${task['id']}" class="delete">Delete</button> </td></tr>`;
+                        template += `<td ><button data-id="${task['id']}" class="edit btn btn-sm btn-success">Edit</button><button data-id="${task['id']}" class="delete btn btn-sm btn-danger">Delete</button> </td></tr>`;
                     });
                 } catch (error) {
                     template = '';
@@ -35,7 +37,7 @@ $(document).ready(function () {
         $('#type').find('option:selected').prop('selected', false);
         $('#type').find('option:first').prop('selected', true);
     }
-   
+
     clearForm();
     performSearch();
 
@@ -46,18 +48,22 @@ $(document).ready(function () {
 
     $('#task-form').submit(function (event) {
         event.preventDefault();
+
         let data = { name: $('#name').val(), description: $('#description').val(), type: $('#type').val(), id: $(this).attr('data-task-id') };
         // console.log(data)
+
         $.ajax({
             url: 'task-save.php',
             type: 'POST',
             data: { data },
             success: function (res) {
-                console.log(res)
+                // console.log(res)
                 performSearch();
                 clearForm();
+                myModal.hide();
             }
-        })    })
+        })
+    })
     $(document).on('click', 'input[type="checkbox"]', function () {
         // console.log(checkboxId)
         let data = { id: $(this).attr('id'), state: $(this).prop('checked') ? 1 : 0 };
@@ -101,17 +107,23 @@ $(document).ready(function () {
     })
     $('body').on('click', '.edit', function () {
         let data = { id: $(this).data('id') };
+
+        myModal.toggle();
         $.ajax({
             url: 'task-searchFromId.php',
             type: 'POST',
-            data: {data},
-            success: function(res){
-                 res = JSON.parse(res);
+            data: { data },
+            success: function (res) {
+                res = JSON.parse(res);
                 $('#name').val(res[0].name);
                 $('#description').val(res[0].description);
                 $('#type').val(res[0].type.toLowerCase());
                 $('#task-form').attr('data-task-id', data.id);
             },
         })
+    })
+    $('#buttonModal').on('click', function () {
+        myModal.toggle();
+
     })
 })

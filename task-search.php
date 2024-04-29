@@ -7,11 +7,25 @@ $data = $_POST['data'];
 
 $search = $data['search'];
 $searchType = $data['searchType'];
-
+$searchMethod = $data['method'];
+$page = intval($data['page']);
+$start = ($page-1) * 10;
 // echo $search;
 if (!empty($search)) {
 
-    $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%'";
+    $query = '';
+    if ($searchMethod == 'id-desc') {
+        $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%' ORDER BY id DESC LIMIT $start, 10";
+    }
+    if ($searchMethod == 'id-asc') {
+        $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%' ORDER BY id ASC LIMIT $start, 10";
+    }
+    if ($searchMethod == 'name-desc') {
+        $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%' ORDER BY name DESC LIMIT $start, 10";
+    }
+    if ($searchMethod == 'name-asc') {
+        $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%' ORDER BY name ASC LIMIT $start, 10";
+    }
     $result = mysqli_query($conn, $query);
     if (!$result) {
         die('Error de consulta ' . mysqli_error($conn));
@@ -31,7 +45,7 @@ if (!empty($search)) {
 
     echo $jsonString;
 } else {
-    $query = "SELECT * FROM task";
+    $query = "SELECT * FROM task ORDER BY id DESC LIMIT $start, 10";
     $result = mysqli_query($conn, $query);
     $json = array();
     while ($row = mysqli_fetch_array($result)) {

@@ -20,6 +20,7 @@
               id="search"
               class="form-control mr-sm-2"
               placeholder="Search Your Task"
+              data-method-search="id-desc"
             />
             <button
               id="toggleSearchTypeButton"
@@ -87,14 +88,14 @@
                       ></textarea>
                     </div>
                     <div class="form-group mb-3">
+                      <label>Task type</label>
                       <select class="form-select border border-dark" id="type">
-                        <option selected>Type</option>
                         <option value="info">Info</option>
                         <option value="warning">Warning</option>
                         <option value="danger">Danger</option>
                       </select>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">
+                    <button id="sendForm" type="submit" class="btn btn-primary btn-block">
                       Save Task
                     </button>
                   </form>
@@ -107,19 +108,40 @@
     </nav>
     <div class="container mt-3 p-4">
       <div class="row">
-        <div class="">
-          <table class="table table-sm">
-            <th>
-              <tr>
-                <td id="filterById" type="desc">Id</td>
-                <td id="filterByName" type="desc">Name</td>
-                <td>Description</td>
-                <td>Done</td>
-                <td>Options</td>
-              </tr>
-            </th>
-            <tbody id="tasks"></tbody>
-          </table>
+        <h2>Hay <span id="records"></span> registros</h2>
+        <table id="table" class="table table-sm">
+          <th>
+            <tr>
+              <td
+                id="filterById"
+                type="desc"
+                style="cursor: pointer; width: 10%"
+              >
+                Id  &#x25BC;
+              </td>
+              <td id="filterByName" type="asc" style="cursor: pointer">
+                Name &#x25B2; &#x25BC;
+              </td>
+              <td>Description</td>
+              <td>Done</td>
+              <td>Options</td>
+            </tr>
+          </th>
+          <tbody id="tasks"></tbody>
+        </table>
+      </div>
+      <div class="row mt-3">
+        <div class="col-5">
+          <div class="container d-flex justify-content-left align-items-center gap-2">
+            <button
+              id="previous"
+              class="btn btn-sm btn-primary border border-light"
+            >
+              Previous Page
+            </button>
+            <p id="page" class="mb-0">1</p>
+            <button id="next" class="btn btn-sm btn-primary">Next Page</button>
+          </div>
         </div>
       </div>
     </div>

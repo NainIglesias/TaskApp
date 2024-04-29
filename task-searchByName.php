@@ -1,7 +1,9 @@
 <?php
 include ('database.php');
 $type = $_POST['type'];
-$query = "SELECT * from task ORDER BY name $type";
+$page = intval($_POST['page']);
+$start = ($page-1) * 10;
+$query = "SELECT * from task ORDER BY name $type LIMIT $start, 10";
 $result = mysqli_query($conn, $query);
 $json = [];
 while ($row = mysqli_fetch_array($result)) {

@@ -32,6 +32,14 @@
             </button>
           </form>
         </li>
+        <li class="nav-item">
+          <select class="form-select" id="type-filter">
+            <option selected>Type</option>
+            <option value="info">Info</option>
+            <option value="warning">Warning</option>
+            <option value="danger">Danger</option>
+          </select>
+        </li>
 
         <li class="nav-item">
           <!-- Button to trigger modal -->
@@ -95,7 +103,11 @@
                         <option value="danger">Danger</option>
                       </select>
                     </div>
-                    <button id="sendForm" type="submit" class="btn btn-primary btn-block">
+                    <button
+                      id="sendForm"
+                      type="submit"
+                      class="btn btn-primary btn-block"
+                    >
                       Save Task
                     </button>
                   </form>
@@ -117,7 +129,7 @@
                 type="desc"
                 style="cursor: pointer; width: 10%"
               >
-                Id  &#x25BC;
+                Id &#x25BC;
               </td>
               <td id="filterByName" type="asc" style="cursor: pointer">
                 Name &#x25B2; &#x25BC;
@@ -132,7 +144,9 @@
       </div>
       <div class="row mt-3">
         <div class="col-5">
-          <div class="container d-flex justify-content-left align-items-center gap-2">
+          <div
+            class="container d-flex justify-content-left align-items-center gap-2"
+          >
             <button
               id="previous"
               class="btn btn-sm btn-primary border border-light"

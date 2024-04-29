@@ -315,4 +315,22 @@ $(document).ready(function () {
             },
         })
     });
+
+    $('#type-filter').on('change', function () {
+        console.log($(this).val())
+        if ($(this).val() == 'Type') {
+            performSearch();
+        } else {
+            let filterType = $(this).val();
+
+            // Ocultar todas las filas de la tabla
+            $('#table #tasks tr').hide();
+
+            // Mostrar solo las filas que coincidan con el valor seleccionado
+            $('#table #tasks tr').filter(function () {
+                console.log($(this))
+                return $(this).data('type') === filterType;
+            }).show();
+        }
+    })
 })

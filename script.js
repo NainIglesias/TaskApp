@@ -1,8 +1,13 @@
 $(document).ready(function () {
+    let confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    let graficModal = new bootstrap.Modal(document.getElementById('graficModal'));
     let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
     let page = 1;
     let taskCount = 0;
     let moreResults = false;
+    let deleteId = 0;
+    let grafico; // CANVAS PARA CHART.JS 
+
     // console.log('jquery')
     function performSearch() {
         let searchType = $('#toggleSearchTypeButton').data('search-type');
@@ -38,8 +43,8 @@ $(document).ready(function () {
                         template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
                         template += `<td>${task['name']} </td>`;
                         template += `<td>${truncatedDescription} </td>`; // Aquí se utiliza la descripción truncada
-                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
-                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success  col-5 mr-5  text-center">Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger  col-6 ">Delete</button> </td></tr>`;
+                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} ${task['done'] == 1 ? "disabled" : ""}> </td>`;
+                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success  col-5 mr-5  text-center" ${task['done'] == 1 ? "disabled" : ""}>Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger  col-6 ">Delete</button> </td></tr>`;
                     });
                     page -= tasks.differencePages;
                     moreResults = tasks.moreResults != 0;
@@ -57,18 +62,6 @@ $(document).ready(function () {
                 $('#tasks').html(template);
             }
         });
-
-
-
-    }
-    function clearForm() {
-
-        $('#task-form').find('input[type="text"], textarea').val('');
-        $('#task-form').attr('data-task-id', '');
-        $('#type').find('option:selected').prop('selected', false);
-        $('#type').find('option:first').prop('selected', true);
-        clearNameErrors();
-        clearDescriptionErrors();
     }
 
     $('#closeModal').on('click', function () {
@@ -83,14 +76,6 @@ $(document).ready(function () {
         performSearch();
     });
 
-    function clearNameErrors() {
-        $('#nameErrors').css('display', 'none');
-        $('#nameErrors').html('')
-    }
-    function clearDescriptionErrors() {
-        $('#descriptionErrors').css('display', 'none');
-        $('#descriptionErrors').html('')
-    }
     $('#task-form').submit(function (event) {
         event.preventDefault();
 
@@ -117,19 +102,29 @@ $(document).ready(function () {
                 type: 'POST',
                 data: { data },
                 success: function (res) {
-                    // console.log(res)
+                    console.log(res)
                     performSearch();
                     clearForm();
+                    showUserFeedback(res, true);
                     myModal.hide();
+                },
+                error: function (error) {
+                    showUserFeedback('Problema en la inserción', false);
                 }
             })
         }
     })
     $(document).on('click', 'input[type="checkbox"]', function () {
         // console.log(checkboxId)
-        let data = { id: $(this).attr('id'), state: $(this).prop('checked') ? 1 : 0 };
+        let id = $(this).attr('id');
+        let data = { id: id, state: 1 };
+        let button = $('button.edit[data-id="' + id + '"]');
+        button.prop('disabled', true);
+        $(this).prop('disabled', true);
+
         // console.log(data)
         let newClass = $(this).prop('checked') ? 'table-success' : 'table-' + $(this).closest('tr').data('type');
+
         // console.log(newClass)
         $(this).closest('tr').removeClass().addClass(newClass);
         // console.log($($(this).attr()))
@@ -144,25 +139,38 @@ $(document).ready(function () {
     })
     $('#toggleSearchTypeButton').on('click', function (event) {
         event.preventDefault();
+        $('#search').val('');
         $(this).data('search-type') == 'name' ? $(this).data('search-type', 'description') : $(this).data('search-type', 'name')
         $(this).data('search-type') == 'name' ? $(this).html('By Name') : $(this).html('By Description')
+        performSearch();
         // console.log('hi')
     })
     $('body').on('click', '.delete', function (event) {
         event.stopPropagation();
-        let data = { id: $(this).data('id') };
+        deleteId = $(this).data('id');
+        $('#idDelete').text(deleteId);
+        confirmDeleteModal.toggle();
+
+    })
+
+    $('#deleteButton').on('click', function (event) {
+        let data = { id: deleteId };
+        confirmDeleteModal.toggle();
+
         // console.log('delete')
         $.ajax({
             url: 'task-delete.php',
             type: 'POST',
             data: { data },
             success: function (res) {
-                // console.log(res)
-                performSearch()
+                // alert(res)
+                performSearch();
+                showUserFeedback('Registro eliminado correctamente', true);
+
             },
-            error: function (xhr, status, error) {
-                console.error('Error: ' + error);
-            },
+            error: function (error) {
+                showUserFeedback('Problema en la eliminación', false);
+            }
         })
     })
     $('body').on('click', '.edit', function () {
@@ -191,6 +199,8 @@ $(document).ready(function () {
         $('#type').prop('disabled', false);
         $('#description').prop('disabled', false);
         $('#name').prop('disabled', false);
+        $('#description').css('resize', 'vertical');
+
         myModal.toggle();
 
     })
@@ -199,13 +209,17 @@ $(document).ready(function () {
         // TODO : FIX THIS -------------->
         let type = $(this).attr('type');
         // console.log(type)
+        // console.log(type == 'desc' )
+        // console.log(type == 'desc')
+        // console.log('click')
+        // console.log(type)
         type == 'desc' ? $(this).attr('type', 'asc') : $(this).attr('type', 'desc');
         type == 'desc' ? $(this).html('Id &#x25BC;') : $(this).html('Id &#x25B2;');
         $('#filterByName').html('Name &#x25B2; &#x25BC;');
         type == 'desc' ? $('#search').attr('data-method-search', 'id-desc') : $('#search').attr('data-method-search', 'id-asc');
+        performSearch();
         // console.log(type)
         // console.log(type.type)
-        performSearch();
     })
     $('#filterByName').on('click', function () {
         let type = $(this).attr('type');
@@ -216,7 +230,7 @@ $(document).ready(function () {
 
         // $('#search')
         // $(this).html('Name &#x25B2;')
-        // console.log(type)
+        // console.log(type) 
         // console.log(type.type)
         performSearch();
     })
@@ -243,24 +257,10 @@ $(document).ready(function () {
         }
     });
 
-    function hidePaginationButtons() {
-        // console.log('Primero'+taskCount)
-        if (moreResults) {
-            $('#next').show();
-        } else {
-            $('#next').hide();
-        }
-        if (page != 1) {
-            $('#previous').show();
-        } else {
-            $('#previous').hide();
-        }
-    }
-
 
     $('#tasks').on('click', 'tr', function (event) {
         // Obtener los valores de las celdas de la fila clicada
-        if ($(event.target).hasClass('delete')) {
+        if ($(event.target).hasClass('delete') || $(event.target).is(':checkbox')) {
             return;
         }
         let id = $(this).find('td:eq(0)').text(); // Obtener el valor de la primera celda (ID)
@@ -271,6 +271,7 @@ $(document).ready(function () {
         $('#type').prop('disabled', true);
         $('#name').prop('disabled', true);
         $('#description').prop('disabled', true);
+        $('#description').css('resize', 'none');
 
         $.ajax({
             url: 'task-searchFromId.php',
@@ -290,6 +291,101 @@ $(document).ready(function () {
         performSearch();
     })
 
+    $('#userFeedbackClose').on('click', function () {
+        $('#userFeedbackDiv').css('display', 'none');
+
+    })
+
+    $('#showGraficModal').on('click', function () {
+        graficModal.toggle();
+
+        $.ajax({
+            url: 'task-searchDoneTasks.php',
+            type: 'POST',
+            success: function (res) {
+                let data = JSON.parse(res);
+                // console.log(data.data)
+                
+                const datos = {
+                    labels: [
+                        "Lunes",
+                        "Martes",
+                        "Miércoles",
+                        "Jueves",
+                        "Viernes",
+                        "Sábado",
+                        "Domingo",
+                    ],
+                    datasets: [
+                        {
+                            label: "Tareas Completadas",
+                            data: data.data, // Aquí irían los datos reales
+                            backgroundColor: "rgba(54, 162, 235, 0.5)", // Color de las barras
+                            borderColor: "rgba(54, 162, 235, 1)", // Color del borde de las barras
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+
+                // Opciones del gráfico
+                const opciones = {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    },
+                };
+
+                // Crear el gráfico de barras
+                const ctx = document.getElementById("tareasCompletadas").getContext("2d"); 
+                if (grafico) {
+                    grafico.destroy();
+                }
+                 grafico = new Chart(ctx, {
+                    type: "bar",
+                    data: datos,
+                    options: opciones,
+                });
+            }
+        })
+    })
+    $('#closeGraficModal').on('click', function () {
+        graficModal.toggle();
+    })
+
+    function clearNameErrors() {
+        $('#nameErrors').css('display', 'none');
+        $('#nameErrors').html('')
+    }
+    function clearDescriptionErrors() {
+        $('#descriptionErrors').css('display', 'none');
+        $('#descriptionErrors').html('')
+    }
+
+    function clearForm() {
+
+        $('#task-form').find('input[type="text"], textarea').val('');
+        $('#task-form').attr('data-task-id', '');
+        $('#type').find('option:selected').prop('selected', false);
+        $('#type').find('option:first').prop('selected', true);
+        clearNameErrors();
+        clearDescriptionErrors();
+    }
+
+    function hidePaginationButtons() {
+        // console.log('Primero'+taskCount)
+        if (moreResults) {
+            $('#next').show();
+        } else {
+            $('#next').hide();
+        }
+        if (page != 1) {
+            $('#previous').show();
+        } else {
+            $('#previous').hide();
+        }
+    }
+
     function getTaskCount() {
         $.ajax({
             type: 'POST',
@@ -299,5 +395,13 @@ $(document).ready(function () {
                 $('#records').text(data.total_rows)
             }
         })
+    }
+    function showUserFeedback(message, success) {
+        console.log()
+        $('#userFeedbackDiv').css('display', 'block');
+        $('#userFeedbackText').text(message)
+
+        success ? $('#userFeedbackDiv').addClass('alert-success').removeClass('alert-danger') : $('#userFeedbackDiv').addClass('alert-danger').removeClass('alert-success');
+        // success ? $('#userFeedbackDiv').removeClass('alert-danger') : $('#userFeedbackDiv').removeClass('alert-danger');
     }
 })

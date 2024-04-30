@@ -19,6 +19,8 @@ $differencePages = 0;
 while ($exit) {
 
     $taskType = $data['taskType'];
+    // Se descompone la query en trozos para poder agregar partes dependiendo de los filtros
+    // sin tener que repetir el mismo código 2 veces
     $query = "SELECT * FROM task WHERE $searchType LIKE '%$search%'";
 
     // Agregamos la condición de filtrado por tipo de tarea si no es 'Type'
@@ -41,9 +43,9 @@ while ($exit) {
             $query .= " ORDER BY name ASC";
             break;
     }
-
-    // Agregamos el límite para paginación
+    // Se hace una copia de la query para comprobar si hay resultados antes o despues
     $queryMoreResults = $query;
+    // Agregamos el límite para paginación
     $query .= " LIMIT $start, 10";
     $result = mysqli_query($conn, $query);
     if (!$result) {
@@ -61,22 +63,25 @@ while ($exit) {
         );
     }
     $nextPageStart = ($page * 10);
+    // Query para verificar si hay resultados en la siguiente página
     $queryNextPage = $queryMoreResults . " LIMIT $nextPageStart, 10";
     $resultNextPage = mysqli_query($conn, $queryNextPage);
 
+    // Si el numero de filas es mayor a 0, hay resultados
     if (mysqli_num_rows($resultNextPage) > 0) {
         $moreResults = true;
     }
 
     $jsonString = json_encode($json);
 
-
-    $json == [] ? $start == 0 ? '' : $start -= 10 : $exit = false;
+    // Verificación para salir del bucle, si json = [] se resta 10 a start para que haga la paginación anterior,
+    //  a menos que start ya sea 0 entonces sale del bucle
+    $json == [] ? $start == 0 ? $exit = false : $start -= 10 : $exit = false;
     if ($exit) {
         $differencePages++;
     }
 }
-
+// Como la respuesta está puede estar compuesta por objetos vacios [], se filtra para convertirla a texto plano 
 $startPos = strpos($jsonString, '[');
 
 // Extraer el JSON válido utilizando substr
@@ -93,8 +98,11 @@ $jsonStringFiltered = json_encode(array_values($jsonArray));
 
 // Imprimir el JSON filtrado para enviar al cliente
 $responseObj = [
+    // Información de la query
     'data' => json_decode($jsonStringFiltered, true),
+    // Las páginas de diferencia con respecto a la página pasada
     'differencePages' => $differencePages,
+    // Variable de corte que define si hay resultados en la siguiente paginación de esta misma sentencia
     'moreResults' => $moreResults,
 ];
 

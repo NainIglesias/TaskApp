@@ -2,6 +2,7 @@ $(document).ready(function () {
     let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
     let page = 1;
     let taskCount = 0;
+    let moreResults = false;
     // console.log('jquery')
     function performSearch() {
         let searchType = $('#toggleSearchTypeButton').data('search-type');
@@ -14,28 +15,20 @@ $(document).ready(function () {
             type: 'POST',
             data: { data },
             success: function (res) {
-                console.log('RES-> ' + res);
+                getTaskCount()
+                // console.log('RES-> ' + res);
                 let template = '';
                 try {
                     let tasks = JSON.parse(res);
                     // console.log(tasks)
-                    if (tasks.length == 0) {
-                        if (page != 1) {
-                            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAA.:   ' + p)
-                            page--
-                        }
-
-                    } else {
-                        p = 0;
-                    }
                     taskCount = Math.floor(tasks.data.length / 10);
                     $('#records').text(tasks.length)
 
                     // console.log('TIPO: '+typeof tasks.differencePages)
-                    console.log('TASK COUNT:' + taskCount)
-                    console.log('PAGE COUNT: ' + page)
-                    console.log('Total tasks: ' + tasks.data.length)
-                    console.log('-----------------------------')
+                    // console.log('TASK COUNT:' + taskCount)
+                    // console.log('PAGE COUNT: ' + page)
+                    // console.log('Total tasks: ' + tasks.data.length)
+                    // console.log('-----------------------------')
                     tasks.data.forEach(task => {
                         // Truncar la descripción después de las primeras 5 palabras
                         let truncatedDescription = task['description'].split(' ').slice(0, 5).join(' ');
@@ -49,6 +42,8 @@ $(document).ready(function () {
                         template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success  col-5 mr-5  text-center">Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger  col-6 ">Delete</button> </td></tr>`;
                     });
                     page -= tasks.differencePages;
+                    moreResults = tasks.moreResults != 0;
+                    // console.log(moreResults)
                     $('#page').html(page);
 
                     hidePaginationButtons();
@@ -153,7 +148,8 @@ $(document).ready(function () {
         $(this).data('search-type') == 'name' ? $(this).html('By Name') : $(this).html('By Description')
         // console.log('hi')
     })
-    $('body').on('click', '.delete', function () {
+    $('body').on('click', '.delete', function (event) {
+        event.stopPropagation();
         let data = { id: $(this).data('id') };
         // console.log('delete')
         $.ajax({
@@ -175,6 +171,8 @@ $(document).ready(function () {
         myModal.toggle();
         $('#sendForm').show();
         $('#type').prop('disabled', false);
+        $('#description').prop('disabled', false);
+        $('#name').prop('disabled', false);
         $.ajax({
             url: 'task-searchFromId.php',
             type: 'POST',
@@ -191,6 +189,8 @@ $(document).ready(function () {
     $('#buttonModal').on('click', function () {
         $('#sendForm').show();
         $('#type').prop('disabled', false);
+        $('#description').prop('disabled', false);
+        $('#name').prop('disabled', false);
         myModal.toggle();
 
     })
@@ -245,7 +245,7 @@ $(document).ready(function () {
 
     function hidePaginationButtons() {
         // console.log('Primero'+taskCount)
-        if (page >= taskCount && taskCount > 0) {
+        if (moreResults) {
             $('#next').show();
         } else {
             $('#next').hide();
@@ -258,14 +258,19 @@ $(document).ready(function () {
     }
 
 
-    $('#tasks').on('click', 'tr', function () {
+    $('#tasks').on('click', 'tr', function (event) {
         // Obtener los valores de las celdas de la fila clicada
+        if ($(event.target).hasClass('delete')) {
+            return;
+        }
         let id = $(this).find('td:eq(0)').text(); // Obtener el valor de la primera celda (ID)
         let data = { id: id };
 
         myModal.toggle();
         $('#sendForm').hide();
         $('#type').prop('disabled', true);
+        $('#name').prop('disabled', true);
+        $('#description').prop('disabled', true);
 
         $.ajax({
             url: 'task-searchFromId.php',
@@ -285,4 +290,14 @@ $(document).ready(function () {
         performSearch();
     })
 
+    function getTaskCount() {
+        $.ajax({
+            type: 'POST',
+            url: 'task-searchCountAll.php',
+            success: function (res) {
+                let data = JSON.parse(res);
+                $('#records').text(data.total_rows)
+            }
+        })
+    }
 })

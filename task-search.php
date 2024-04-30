@@ -13,6 +13,8 @@ $start = ($page - 1) * 10;
 // echo $search;
 
 $exit = true;
+$moreResults = 0;
+
 $differencePages = 0;
 while ($exit) {
 
@@ -41,6 +43,7 @@ while ($exit) {
     }
 
     // Agregamos el límite para paginación
+    $queryMoreResults = $query;
     $query .= " LIMIT $start, 10";
     $result = mysqli_query($conn, $query);
     if (!$result) {
@@ -57,6 +60,14 @@ while ($exit) {
 
         );
     }
+    $nextPageStart = ($page * 10);
+    $queryNextPage = $queryMoreResults . " LIMIT $nextPageStart, 10";
+    $resultNextPage = mysqli_query($conn, $queryNextPage);
+
+    if (mysqli_num_rows($resultNextPage) > 0) {
+        $moreResults = true;
+    }
+
     $jsonString = json_encode($json);
 
 
@@ -83,7 +94,8 @@ $jsonStringFiltered = json_encode(array_values($jsonArray));
 // Imprimir el JSON filtrado para enviar al cliente
 $responseObj = [
     'data' => json_decode($jsonStringFiltered, true),
-    'differencePages' => $differencePages
+    'differencePages' => $differencePages,
+    'moreResults' => $moreResults,
 ];
 
 // Convertir el objeto a JSON

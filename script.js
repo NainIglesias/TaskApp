@@ -7,19 +7,36 @@ $(document).ready(function () {
         let searchType = $('#toggleSearchTypeButton').data('search-type');
         let search = $('#search').val();
         let searchMethod = $('#search').attr('data-method-search');
-        let page = $('#page').text();
-        let data = { search: search, searchType: searchType, method: searchMethod, page: page };
-
+        let taskType = $('#type-filter').val();
+        let data = { search: search, searchType: searchType, method: searchMethod, page: page, taskType: taskType };
         $.ajax({
             url: 'task-search.php',
             type: 'POST',
             data: { data },
             success: function (res) {
-                // console.log(res); 
+                console.log('RES-> ' + res);
                 let template = '';
                 try {
                     let tasks = JSON.parse(res);
-                    tasks.forEach(task => {
+                    // console.log(tasks)
+                    if (tasks.length == 0) {
+                        if (page != 1) {
+                            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAA.:   ' + p)
+                            page--
+                        }
+
+                    } else {
+                        p = 0;
+                    }
+                    taskCount = Math.floor(tasks.data.length / 10);
+                    $('#records').text(tasks.length)
+
+                    // console.log('TIPO: '+typeof tasks.differencePages)
+                    console.log('TASK COUNT:' + taskCount)
+                    console.log('PAGE COUNT: ' + page)
+                    console.log('Total tasks: ' + tasks.data.length)
+                    console.log('-----------------------------')
+                    tasks.data.forEach(task => {
                         // Truncar la descripción después de las primeras 5 palabras
                         let truncatedDescription = task['description'].split(' ').slice(0, 5).join(' ');
                         if (task['description'].split(' ').length > 5) {
@@ -31,12 +48,23 @@ $(document).ready(function () {
                         template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
                         template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success  col-5 mr-5  text-center">Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger  col-6 ">Delete</button> </td></tr>`;
                     });
+                    page -= tasks.differencePages;
+                    $('#page').html(page);
+
+                    hidePaginationButtons();
+
                 } catch (error) {
+                    if (error instanceof Error) {
+
+                    }
                     template = '';
                 }
                 $('#tasks').html(template);
             }
         });
+
+
+
     }
     function clearForm() {
 
@@ -98,7 +126,6 @@ $(document).ready(function () {
                     performSearch();
                     clearForm();
                     myModal.hide();
-                    getTaskCount();
                 }
             })
         }
@@ -136,7 +163,6 @@ $(document).ready(function () {
             success: function (res) {
                 // console.log(res)
                 performSearch()
-                getTaskCount();
             },
             error: function (xhr, status, error) {
                 console.error('Error: ' + error);
@@ -170,44 +196,21 @@ $(document).ready(function () {
     })
 
     $('#filterById').on('click', function () {
+        // TODO : FIX THIS -------------->
         let type = $(this).attr('type');
+        // console.log(type)
         type == 'desc' ? $(this).attr('type', 'asc') : $(this).attr('type', 'desc');
         type == 'desc' ? $(this).html('Id &#x25BC;') : $(this).html('Id &#x25B2;');
-        let page = $('#page').text();
-
         $('#filterByName').html('Name &#x25B2; &#x25BC;');
         type == 'desc' ? $('#search').attr('data-method-search', 'id-desc') : $('#search').attr('data-method-search', 'id-asc');
         // console.log(type)
         // console.log(type.type)
-        $.ajax({
-            url: 'task-searchById.php',
-            type: 'POST',
-            data: { type: type, page: page },
-            success: function (res) {
-                let template = '';
-                // console.log(res)
-                try {
-                    let tasks = JSON.parse(res);
-                    tasks.forEach(task => {
-                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
-                        template += `<td>${task['name']} </td>`;
-                        template += `<td>${task['description']} </td>`;
-                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
-                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success d-inline col-5 mr-5">Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger d-inline col-6">Delete</button> </td></tr>`;
-                    });
-                } catch (error) {
-                    template = '';
-                    console.error(error)
-                }
-                $('#tasks').html(template);
-            }
-        })
+        performSearch();
     })
     $('#filterByName').on('click', function () {
         let type = $(this).attr('type');
         type == 'desc' ? $(this).attr('type', 'asc') : $(this).attr('type', 'desc');
         type == 'desc' ? $(this).html('Name &#x25BC;') : $(this).html('Name &#x25B2;');
-        let page = $('#page').text();
         $('#filterById').html('Id &#x25B2; &#x25BC;');
         type == 'desc' ? $('#search').attr('data-method-search', 'name-desc') : $('#search').attr('data-method-search', 'name-asc');
 
@@ -215,29 +218,7 @@ $(document).ready(function () {
         // $(this).html('Name &#x25B2;')
         // console.log(type)
         // console.log(type.type)
-        $.ajax({
-            url: 'task-searchByName.php',
-            type: 'POST',
-            data: { type: type, page: page },
-            success: function (res) {
-                let template = '';
-                // console.log(res)
-                try {
-                    let tasks = JSON.parse(res);
-                    tasks.forEach(task => {
-                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
-                        template += `<td>${task['name']} </td>`;
-                        template += `<td>${task['description']} </td>`;
-                        template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} > </td>`;
-                        template += `<td><button data-id="${task['id']}" class="edit btn btn-sm btn-success d-inline col-5 mr-5">Edit</button><span>&nbsp;</span><button data-id="${task['id']}" class="delete btn btn-sm btn-danger d-inline col-6">Delete</button> </td></tr>`;
-                    });
-                } catch (error) {
-                    template = '';
-                    console.error(error)
-                }
-                $('#tasks').html(template);
-            }
-        })
+        performSearch();
     })
     $('#previous').on('click', function () {
         if (page > 1) {
@@ -251,49 +232,33 @@ $(document).ready(function () {
 
     // Manejar clic en botón "Siguiente"
     $('#next').on('click', function () {
-        if (page < taskCount) {
+        if (page >= taskCount) {
 
             page++;
             hidePaginationButtons();
             // console.log(page)
             // console.log(taskCount)
             $('#page').html(page);
-            getTaskCount()
             performSearch();
         }
     });
-    getTaskCount()
-    function getTaskCount() {
-        $.ajax({
-            url: 'task-getTaskCount.php',
-            type: 'POST',
-            success: function (res) {
-                let data = JSON.parse(res);
-                // console.log(res)
-                // console.log(data)
-                $('#records').text(data.count);
-                taskCount = Math.ceil(data.count / 10);
-            }
-        })
-    }
+
     function hidePaginationButtons() {
-        if (page >= 1) {
-            if (page == taskCount) {
-                $('#next').hide();
-            } else {
-                $('#next').show();
-            }
-            if (page == 1) {
-                $('#previous').hide();
-            } else {
-                $('#previous').show();
-            }
+        // console.log('Primero'+taskCount)
+        if (page >= taskCount && taskCount > 0) {
+            $('#next').show();
+        } else {
+            $('#next').hide();
+        }
+        if (page != 1) {
+            $('#previous').show();
+        } else {
+            $('#previous').hide();
         }
     }
-    hidePaginationButtons();
 
 
-    $('#table tbody').on('click', 'tr', function () {
+    $('#tasks').on('click', 'tr', function () {
         // Obtener los valores de las celdas de la fila clicada
         let id = $(this).find('td:eq(0)').text(); // Obtener el valor de la primera celda (ID)
         let data = { id: id };
@@ -317,20 +282,7 @@ $(document).ready(function () {
     });
 
     $('#type-filter').on('change', function () {
-        console.log($(this).val())
-        if ($(this).val() == 'Type') {
-            performSearch();
-        } else {
-            let filterType = $(this).val();
-
-            // Ocultar todas las filas de la tabla
-            $('#table #tasks tr').hide();
-
-            // Mostrar solo las filas que coincidan con el valor seleccionado
-            $('#table #tasks tr').filter(function () {
-                console.log($(this))
-                return $(this).data('type') === filterType;
-            }).show();
-        }
+        performSearch();
     })
+
 })

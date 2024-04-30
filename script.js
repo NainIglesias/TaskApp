@@ -298,59 +298,18 @@ $(document).ready(function () {
 
     $('#showGraficModal').on('click', function () {
         graficModal.toggle();
-
-        $.ajax({
-            url: 'task-searchDoneTasks.php',
-            type: 'POST',
-            success: function (res) {
-                let data = JSON.parse(res);
-                // console.log(data.data)
-                
-                const datos = {
-                    labels: [
-                        "Lunes",
-                        "Martes",
-                        "Miércoles",
-                        "Jueves",
-                        "Viernes",
-                        "Sábado",
-                        "Domingo",
-                    ],
-                    datasets: [
-                        {
-                            label: "Tareas Completadas",
-                            data: data.data, // Aquí irían los datos reales
-                            backgroundColor: "rgba(54, 162, 235, 0.5)", // Color de las barras
-                            borderColor: "rgba(54, 162, 235, 1)", // Color del borde de las barras
-                            borderWidth: 1,
-                        },
-                    ],
-                };
-
-                // Opciones del gráfico
-                const opciones = {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                        }
-                    },
-                };
-
-                // Crear el gráfico de barras
-                const ctx = document.getElementById("tareasCompletadas").getContext("2d"); 
-                if (grafico) {
-                    grafico.destroy();
-                }
-                 grafico = new Chart(ctx, {
-                    type: "bar",
-                    data: datos,
-                    options: opciones,
-                });
-            }
-        })
+        //TODO: HACER QUE SE LE LLAME A ESTO CUANDO SE HACE CLICK EN UNA FLECHA
+        // let weeks_offset = 1;
+        showGrafic();
     })
     $('#closeGraficModal').on('click', function () {
         graficModal.toggle();
+    })
+    $('#goAWeekBack').on('click', function () {
+        showGrafic(0);
+    })
+    $('#goAWeekAhead').on('click', function () {
+        showGrafic(1);
     })
 
     function clearNameErrors() {
@@ -403,5 +362,56 @@ $(document).ready(function () {
 
         success ? $('#userFeedbackDiv').addClass('alert-success').removeClass('alert-danger') : $('#userFeedbackDiv').addClass('alert-danger').removeClass('alert-success');
         // success ? $('#userFeedbackDiv').removeClass('alert-danger') : $('#userFeedbackDiv').removeClass('alert-danger');
+    }
+
+    function showGrafic(weeks_offset = 0) {
+        $.ajax({
+            url: 'task-searchDoneTasks.php',
+            type: 'POST',
+            data: { weeks_offset },
+            success: function (res) {
+                let data = JSON.parse(res);
+                console.log(data)
+
+                const datos = {
+                    labels: [
+                        "Lunes",
+                        "Martes",
+                        "Miércoles",
+                        "Jueves",
+                        "Viernes",
+                        "Sábado",
+                        "Domingo",
+                    ],
+                    datasets: [
+                        {
+                            label: "Tareas Completadas",
+                            data: data.data, // Aquí irían los datos reales
+                            backgroundColor: "rgba(54, 162, 235, 0.5)", // Color de las barras
+                            borderColor: "rgba(54, 162, 235, 1)", // Color del borde de las barras
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+                // Opciones del gráfico
+                const opciones = {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    },
+                };
+                // Crear el gráfico de barras
+                const ctx = document.getElementById("tareasCompletadas").getContext("2d");
+                if (grafico) {
+                    grafico.destroy();
+                }
+                grafico = new Chart(ctx, {
+                    type: "bar",
+                    data: datos,
+                    options: opciones,
+                });
+            }
+        })
     }
 })

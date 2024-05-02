@@ -7,6 +7,7 @@ $(document).ready(function () {
     let moreResults = false;
     let deleteId = 0;
     let grafico; // CANVAS PARA CHART.JS 
+    let weeksOffSet = 0;
 
     // console.log('jquery')
     function performSearch() {
@@ -306,10 +307,10 @@ $(document).ready(function () {
         graficModal.toggle();
     })
     $('#goAWeekBack').on('click', function () {
-        showGrafic(0);
+        showGrafic(--weeksOffSet);
     })
     $('#goAWeekAhead').on('click', function () {
-        showGrafic(1);
+        showGrafic(++weeksOffSet);
     })
 
     function clearNameErrors() {
@@ -370,7 +371,7 @@ $(document).ready(function () {
             type: 'POST',
             data: { weeks_offset },
             success: function (res) {
-                let data = JSON.parse(res);
+                // let data = JSON.parse(res);
                 console.log(data)
 
                 const datos = {
@@ -411,7 +412,16 @@ $(document).ready(function () {
                     data: datos,
                     options: opciones,
                 });
+                toggleGoAWeekAheadButton();
             }
         })
+    }
+
+    function toggleGoAWeekAheadButton() {
+        if (weeksOffSet < 0) {
+            $('#goAWeekAhead').show();
+        } else {
+            $('#goAWeekAhead').hide();
+        }
     }
 })

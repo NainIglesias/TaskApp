@@ -373,18 +373,21 @@ $(document).ready(function () {
             data: { weeks_offset },
             success: function (res) {
                 let data = JSON.parse(res);
-                console.log(data)
+                // Se limpia el array para quitar la primera posición vacía
+                data.data == undefined ? '' : data.data.shift();
+
+                // console.log(data.data);
                 $('#weekSearch').text(obtenerSemana(weeksOffSet));
                 // console.log(obtenerSemana(weeksOffSet)); // Semana actual
                 const datos = {
                     labels: [
-                        "Sabado",
                         "Domingo",
                         "Lunes",
                         "Martes",
                         "Miercoles",
                         "Jueves",
                         "Viernes",
+                        "Sabado",
                     ],
                     datasets: [
                         {

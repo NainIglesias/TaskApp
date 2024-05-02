@@ -24,7 +24,8 @@ $result = mysqli_query($conn, $query);
 
 if ($result->num_rows > 0) {
     // Crear un array para almacenar el total de tareas completadas por día de la semana
-    $completed_tasks_by_day = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    // Se le pone un elemento vacío por la diferencia entre el índice de un array y dawOfWeek
+    $completed_tasks_by_day = ['','Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',];
     // $completed_tasks_by_day = ['Sabado', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
 
     // Almacenar los resultados en el array
@@ -36,7 +37,7 @@ if ($result->num_rows > 0) {
     $response['success'] = true;
     $response['message'] = 'Tareas completadas por día de la semana';
     $response['data'] = $completed_tasks_by_day;
-    $response['query'] = $query;
+    // $response['query'] = $query;
 } else {
     // Si no se encontraron tareas completadas
     $response['success'] = false;

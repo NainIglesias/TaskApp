@@ -301,6 +301,7 @@ $(document).ready(function () {
         graficModal.toggle();
         //TODO: HACER QUE SE LE LLAME A ESTO CUANDO SE HACE CLICK EN UNA FLECHA
         // let weeks_offset = 1;
+        weeksOffSet = 0;
         showGrafic();
     })
     $('#closeGraficModal').on('click', function () {
@@ -371,18 +372,19 @@ $(document).ready(function () {
             type: 'POST',
             data: { weeks_offset },
             success: function (res) {
-                // let data = JSON.parse(res);
+                let data = JSON.parse(res);
                 console.log(data)
-
+                $('#weekSearch').text(obtenerSemana(weeksOffSet));
+                // console.log(obtenerSemana(weeksOffSet)); // Semana actual
                 const datos = {
                     labels: [
+                        "Sabado",
+                        "Domingo",
                         "Lunes",
                         "Martes",
-                        "Miércoles",
+                        "Miercoles",
                         "Jueves",
                         "Viernes",
-                        "Sábado",
-                        "Domingo",
                     ],
                     datasets: [
                         {
@@ -423,5 +425,38 @@ $(document).ready(function () {
         } else {
             $('#goAWeekAhead').hide();
         }
+    }
+
+    function obtenerSemana(numero) {
+        // Obtener la fecha actual
+        let fechaActual = new Date();
+        // Obtener el día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
+        let diaSemana = fechaActual.getDay();
+        // Obtener el día del mes
+        let diaMes = fechaActual.getDate();
+        // Obtener el mes (0: enero, 1: febrero, ..., 11: diciembre)
+        let mes = fechaActual.getMonth();
+        // Obtener el año
+        let año = fechaActual.getFullYear();
+
+        // Calcular el primer día de la semana actual (lunes)
+        let primerDiaSemana = new Date(año, mes, diaMes - diaSemana + 1);
+        // Calcular el último día de la semana actual (domingo)
+        let ultimoDiaSemana = new Date(año, mes, diaMes - diaSemana + 7);
+
+        // Ajustar la fecha según el número proporcionado
+        primerDiaSemana.setDate(primerDiaSemana.getDate() + (numero * 7));
+        ultimoDiaSemana.setDate(ultimoDiaSemana.getDate() + (numero * 7));
+
+        // Obtener el mes y el día del primer y último día de la semana
+        let mesInicio = primerDiaSemana.getMonth() + 1;
+        let diaInicio = primerDiaSemana.getDate();
+        let mesFin = ultimoDiaSemana.getMonth() + 1;
+        let diaFin = ultimoDiaSemana.getDate();
+
+        // Formatear la semana en el formato deseado
+        let semana = diaInicio + '/' + mesInicio + '-' + diaFin + '/' + mesFin;
+
+        return semana;
     }
 })

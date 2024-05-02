@@ -25,6 +25,7 @@ $result = mysqli_query($conn, $query);
 if ($result->num_rows > 0) {
     // Crear un array para almacenar el total de tareas completadas por día de la semana
     $completed_tasks_by_day = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    // $completed_tasks_by_day = ['Sabado', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
 
     // Almacenar los resultados en el array
     while ($row = $result->fetch_assoc()) {

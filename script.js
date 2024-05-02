@@ -1,11 +1,13 @@
 $(document).ready(function () {
     let confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    let confirmDonedModal = new bootstrap.Modal(document.getElementById('confirmDonedModal'));
     let graficModal = new bootstrap.Modal(document.getElementById('graficModal'));
     let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
     let page = 1;
     let taskCount = 0;
     let moreResults = false;
     let deleteId = 0;
+    let donedId = 0;
     let grafico; // CANVAS PARA CHART.JS 
     let weeksOffSet = 0;
 
@@ -115,28 +117,15 @@ $(document).ready(function () {
             })
         }
     })
-    $(document).on('click', 'input[type="checkbox"]', function () {
+    $(document).on('click', 'input[type="checkbox"]', function (event) {
         // console.log(checkboxId)
-        let id = $(this).attr('id');
-        let data = { id: id, state: 1 };
-        let button = $('button.edit[data-id="' + id + '"]');
-        button.prop('disabled', true);
-        $(this).prop('disabled', true);
+        event.preventDefault();
+        confirmDonedModal.toggle();
+        donedId = $(this).attr('id');
+        console.log(donedId)
+        $('#idDoned').text(donedId);
 
-        // console.log(data)
-        let newClass = $(this).prop('checked') ? 'table-success' : 'table-' + $(this).closest('tr').data('type');
 
-        // console.log(newClass)
-        $(this).closest('tr').removeClass().addClass(newClass);
-        // console.log($($(this).attr()))
-        $.ajax({
-            url: 'task-save.php',
-            type: 'POST',
-            data: { data },
-            success: function (res) {
-                // console.log(res)
-            }
-        })
     })
     $('#toggleSearchTypeButton').on('click', function (event) {
         event.preventDefault();
@@ -312,6 +301,34 @@ $(document).ready(function () {
     })
     $('#goAWeekAhead').on('click', function () {
         showGrafic(++weeksOffSet);
+    })
+
+
+
+    $('#donedButton').on('click', function () {
+        let data = { id: donedId, state: 1 };
+        let button = $('button.edit[data-id="' + donedId + '"]');
+        let checkbox = $('input[type="checkbox"][id="' + donedId + '"]');
+        console.log(checkbox)
+        console.log(button)
+        button.prop('disabled', true);
+        checkbox.prop('disabled', true);
+        checkbox.prop('checked', true);
+
+        // console.log(data)
+
+        // console.log(newClass)
+        checkbox.closest('tr').removeClass().addClass('table-success');
+        // console.log($($(this).attr()))
+        confirmDonedModal.toggle();
+        $.ajax({
+            url: 'task-save.php',
+            type: 'POST',
+            data: { data },
+            success: function (res) {
+                // console.log(res)
+            }
+        })
     })
 
     function clearNameErrors() {

@@ -38,9 +38,14 @@
                       <div class="col-6">
                         <button
                           id="goAWeekBack"
-                          class="btn btn-sm btn-light border border-dark h-50 w-100 "
+                          class="btn btn-sm btn-light border border-dark h-50 w-100"
                         >
-                          <svg  class="mb-5" width="40" height="40" viewBox="0 0 20 20">
+                          <svg
+                            class="mb-5"
+                            width="40"
+                            height="40"
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M2 10l6-6v4h8v4h-8v4z" />
                           </svg>
                         </button>
@@ -50,7 +55,12 @@
                           id="goAWeekAhead"
                           class="btn btn-sm btn-light border border-dark h-50 w-100"
                         >
-                          <svg class="mb-5" width="40" height="40" viewBox="0 0 20 20">
+                          <svg
+                            class="mb-5"
+                            width="40"
+                            height="40"
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M18 10l-6-6v4h-8v4h8v4z" />
                           </svg>
                         </button>
@@ -209,6 +219,46 @@
               <!-- Botón para eliminar  -->
               <button type="button" class="btn btn-danger" id="deleteButton">
                 Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="confirmDonedModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Confirmación de Compleción
+              </h5>
+              <button
+                type="button"
+                class="btn-close close"
+                data-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              ¿Estás seguro de que quieres marcar como hecho el registro
+              <span id="idDoned"></span> ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-success" id="donedButton">
+                Marcar como hecho
               </button>
             </div>
           </div>

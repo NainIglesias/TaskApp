@@ -359,18 +359,18 @@
           <div class="col">
             <h2>Hay <span id="records"></span> registros</h2>
           </div>
-          <div class="col z-3">
+          <div class="col ">
             <div
               id="userFeedbackDiv"
               style="display: none"
-              class="alert"
+              class="alert position-fixed"
               role="alert"
             >
               <div class="row">
-                <div class="col-9">
+                <div class="col-10">
                   <p class="mt-1" id="userFeedbackText"></p>
                 </div>
-                <div class="col-3 text-end">
+                <div class="col-2 text-end">
                   <button
                     type="button"
                     id="userFeedbackClose"
@@ -383,21 +383,21 @@
             </div>
           </div>
         </div>
-        <div id="buttonCheckGroup" class="row" style="display: none">
+        <div
+          id="buttonCheckGroup"
+          class="row align-items-end justify-content-end position-absolute mt-5"
+          style="display: none"
+        >
           <div class="col">
             <button class="btn bnt-sm btn-outline-info" id="hideCheckGroup">
               Cancelar
             </button>
-          </div>
-          <div class="col mt-2">
             <button
               class="btn bnt-sm btn-outline-success"
               id="markAsDonedCheckedGroup"
             >
               Marcar como hecho
             </button>
-          </div>
-          <div class="col mt-2">
             <button
               class="btn bnt-sm btn-outline-danger"
               id="deleteCheckedGroup"
@@ -406,7 +406,7 @@
             </button>
           </div>
         </div>
-        <table id="table" class="table table-sm">
+        <table id="table" class="table table-sm mt-5">
           <th>
             <tr>
               <td></td>
@@ -445,7 +445,7 @@
         </div>
       </div>
     </div>
-    
+
     <script
       src="https://code.jquery.com/jquery-3.7.1.js"
       integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="

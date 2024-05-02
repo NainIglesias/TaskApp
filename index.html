@@ -298,7 +298,11 @@
                 Cancelar
               </button>
               <!-- Botón para eliminar  -->
-              <button type="button" class="btn btn-danger" id="deleteGroupButton">
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="deleteGroupButton"
+              >
                 Eliminar
               </button>
             </div>
@@ -306,46 +310,50 @@
         </div>
       </div>
       <div
-      class="modal fade"
-      id="confirMarkAsDonedCheckedGroupModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
-              Confirmación de Compleción en Conjunto
-            </h5>
-            <button
-              type="button"
-              class="btn-close close"
-              data-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            ¿Estás seguro de que quieres marcar como hechos los registros:
-            <span id="idsGroupMarkAsDoned"></span> ?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <!-- Botón para eliminar  -->
-            <button type="button" class="btn btn-danger" id="markAsDonedCheckedGroupButton">
-              Marcar como hechos
-            </button>
+        class="modal fade"
+        id="confirMarkAsDonedCheckedGroupModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Confirmación de Compleción en Conjunto
+              </h5>
+              <button
+                type="button"
+                class="btn-close close"
+                data-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              ¿Estás seguro de que quieres marcar como hechos los registros:
+              <span id="idsGroupMarkAsDoned"></span> ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <!-- Botón para eliminar  -->
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="markAsDonedCheckedGroupButton"
+              >
+                Marcar como hechos
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
       <div class="row">
         <div class="row">
           <div class="col">
@@ -437,6 +445,7 @@
         </div>
       </div>
     </div>
+    
     <script
       src="https://code.jquery.com/jquery-3.7.1.js"
       integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="

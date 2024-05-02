@@ -137,6 +137,7 @@ $(document).ready(function () {
         // console.log(checkboxId)
         event.preventDefault();
         confirmDonedModal.toggle();
+
         donedId = $(this).attr('id');
         console.log(donedId)
         $('#idDoned').text(donedId);
@@ -352,13 +353,24 @@ $(document).ready(function () {
                 $('#buttonCheckGroup').css('display', 'block');
 
             }
-        }, 500); // Cambia 1000 a la cantidad de milisegundos que deseas para definir un click largo
+        }, 1000); // Cambia 1000 a la cantidad de milisegundos que deseas para definir un click largo
+    });
+
+    $('#tasks').on('mouseup', 'tr', function (event) {
+        pressed = false;
+        clearTimeout(timeClick);
+    });
+
+    // Agrega un listener para el evento 'mouseleave'
+    $('#tasks').on('mouseleave', 'tr', function (event) {
+        pressed = false;
+        clearTimeout(timeClick);
     });
 
     $(document).on('click', '.checkBoxGroup', function (event) {
         // console.log(checkboxId)
         if ($(this).prop('checked')) {
-            console.log('marked');
+            // console.log('marked');
             checkedGroup.push($(this).data('id'))
         } else {
             let index = checkedGroup.indexOf($(this).data('id'));
@@ -366,7 +378,7 @@ $(document).ready(function () {
                 checkedGroup.splice(index, 1);
             }
         }
-        console.log(checkedGroup)
+        // console.log(checkedGroup)
     })
 
     $('#hideCheckGroup').on('click', function () {
@@ -462,7 +474,7 @@ $(document).ready(function () {
         })
     }
     function showUserFeedback(message, success) {
-        console.log()
+        // console.log()
         $('#userFeedbackDiv').css('display', 'block');
         $('#userFeedbackText').text(message)
 
@@ -566,4 +578,9 @@ $(document).ready(function () {
 
         return semana;
     }
+
+
 })
+
+
+

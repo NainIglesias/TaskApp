@@ -11,6 +11,7 @@ $(document).ready(function () {
     let graphic; // CANVAS PARA CHART.JS 
     let weeksOffSet = 0;
     let pressed = false;
+    let checkedGroup = [];
     let timeClick;
 
     // console.log('jquery')
@@ -45,8 +46,18 @@ $(document).ready(function () {
                         if (task['description'].split(' ').length > 5) {
                             truncatedDescription += '...';
                         }
-                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"><td> <input class="checkBoxGroup" id="${task['id']}D" type="checkbox" style="display:${pressed?'block':'none'}"></td> `;
-                        template += `<td>${task['id']} </td>`;
+
+                        let isChecked = checkedGroup.includes(parseInt(task['id']));
+                        // console.log(isChecked)
+                        // console.log(checkedGroup)
+                        // console.log(typeof task['id'])
+
+
+                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}">
+                        <td> 
+                            <input data-id="${task['id']}" class="checkBoxGroup" type="checkbox" style="display:${pressed ? 'block' : 'none'}" ${isChecked ? 'checked' : ''}>
+                        </td>
+                    `; template += `<td>${task['id']} </td>`;
                         template += `<td>${task['name']} </td>`;
                         template += `<td>${truncatedDescription} </td>`; // Aquí se utiliza la descripción truncada
                         template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} ${task['done'] == 1 ? "disabled" : ""}> </td>`;
@@ -120,15 +131,13 @@ $(document).ready(function () {
             })
         }
     })
-    $(document).on('click', 'input[type="checkbox"]', function (event) {
+    $(document).on('click', 'input[type="checkbox"]:not(.checkBoxGroup)', function (event) {
         // console.log(checkboxId)
         event.preventDefault();
         confirmDonedModal.toggle();
         donedId = $(this).attr('id');
         console.log(donedId)
         $('#idDoned').text(donedId);
-
-
     })
     $('#toggleSearchTypeButton').on('click', function (event) {
         event.preventDefault();
@@ -310,8 +319,8 @@ $(document).ready(function () {
         let data = { id: donedId, state: 1 };
         let button = $('button.edit[data-id="' + donedId + '"]');
         let checkbox = $('input[type="checkbox"][id="' + donedId + '"]');
-        console.log(checkbox)
-        console.log(button)
+        // console.log(checkbox)
+        // console.log(button)
         button.prop('disabled', true);
         checkbox.prop('disabled', true);
         checkbox.prop('checked', true);
@@ -337,14 +346,61 @@ $(document).ready(function () {
         timeClick = setTimeout(function () {
             if (pressed) {
                 // console.log("Click largo detectado!");
-                $('.checkBoxGroup').css('display','block');
+                $('.checkBoxGroup').css('display', 'block');
+                $('#buttonCheckGroup').css('display', 'block');
 
             }
         }, 500); // Cambia 1000 a la cantidad de milisegundos que deseas para definir un click largo
     });
 
- 
+    $(document).on('click', '.checkBoxGroup', function (event) {
+        // console.log(checkboxId)
+        if ($(this).prop('checked')) {
+            console.log('marked');
+            checkedGroup.push($(this).data('id'))
+        } else {
+            let index = checkedGroup.indexOf($(this).data('id'));
+            if (index !== -1) {
+                checkedGroup.splice(index, 1);
+            }
+        }
+        console.log(checkedGroup)
+    })
 
+    $('#hideCheckGroup').on('click', function () {
+        $('.checkBoxGroup').css('display', 'none');
+        $('#buttonCheckGroup').css('display', 'none');
+        let checkboxesMarcados = $('.checkBoxGroup:checked');
+        checkboxesMarcados.each(function () {
+            // Realiza alguna acción con cada checkbox marcado
+            // console.log($(this).data('id') + ' está marcado.');
+            $(this).prop('checked', false);
+        });
+    })
+
+    $('#markAsDonedCheckedGroup').on('click', function () {
+        $.ajax({
+            url: 'task-setDoneChekedGroup.php',
+            type: 'POST',
+            data: { checkedGroup: checkedGroup },
+            success: function (res) {
+                // console.log(res)
+                performSearch();
+            }
+        })
+    })
+    $('#deleteCheckedGroup').on('click', function () {
+
+        $.ajax({
+            url: 'task-deleteCheckedGroup.php',
+            type: 'POST',
+            data: { checkedGroup: checkedGroup },
+            success: function (res) {
+                // console.log(res)
+                performSearch();
+            }
+        })
+    })
 
     function clearNameErrors() {
         $('#nameErrors').css('display', 'none');

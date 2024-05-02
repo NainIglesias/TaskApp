@@ -23,7 +23,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="graficModalLabel">
-                    Tareas Completadas por Día de la Semana: <span id="weekSearch"></span>
+                    Tareas Completadas por Día de la Semana:
+                    <span id="weekSearch"></span>
                   </h5>
                   <button
                     id="closeGraficModal"
@@ -33,17 +34,30 @@
                 </div>
                 <div class="modal-body">
                   <div class="container align-items-center">
-                      <div class="row">
-                          <div class="col-3">
-                              <button id="goAWeekBack"class="leftArrow btn btn-lg btn-light border border-dark w-100">Botón izquierdo</button>
-                          </div>
-                          <div id="goAWeekAhead" class="col-3 text-end">
-                              <button class="rightArrow btn btn-lg btn-light border border-dark w-100">Botón derecho</button>
-                          </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <button
+                          id="goAWeekBack"
+                          class="btn btn-sm btn-light border border-dark h-50 w-100 "
+                        >
+                          <svg  class="mb-5" width="40" height="40" viewBox="0 0 20 20">
+                            <path d="M2 10l6-6v4h8v4h-8v4z" />
+                          </svg>
+                        </button>
                       </div>
+                      <div class="col-6 text-end">
+                        <button
+                          id="goAWeekAhead"
+                          class="btn btn-sm btn-light border border-dark h-50 w-100"
+                        >
+                          <svg class="mb-5" width="40" height="40" viewBox="0 0 20 20">
+                            <path d="M18 10l-6-6v4h-8v4h8v4z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-              </div>
-              
+                </div>
 
                 <div class="modal-body">
                   <!-- Canvas para el gráfico -->

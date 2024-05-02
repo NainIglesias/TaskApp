@@ -264,12 +264,94 @@
           </div>
         </div>
       </div>
+      <div
+        class="modal fade"
+        id="confirmDeleteGroupModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Confirmación de Eliminación en Conjunto
+              </h5>
+              <button
+                type="button"
+                class="btn-close close"
+                data-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              ¿Estás seguro de que quieres eliminar los registros:
+              <span id="idsGroupDelete"></span> ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <!-- Botón para eliminar  -->
+              <button type="button" class="btn btn-danger" id="deleteGroupButton">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+      class="modal fade"
+      id="confirMarkAsDonedCheckedGroupModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Confirmación de Compleción en Conjunto
+            </h5>
+            <button
+              type="button"
+              class="btn-close close"
+              data-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que quieres marcar como hechos los registros:
+            <span id="idsGroupMarkAsDoned"></span> ?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <!-- Botón para eliminar  -->
+            <button type="button" class="btn btn-danger" id="markAsDonedCheckedGroupButton">
+              Marcar como hechos
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
       <div class="row">
         <div class="row">
           <div class="col">
             <h2>Hay <span id="records"></span> registros</h2>
           </div>
-          <div class="col">
+          <div class="col z-3">
             <div
               id="userFeedbackDiv"
               style="display: none"
@@ -293,15 +375,27 @@
             </div>
           </div>
         </div>
-        <div id="buttonCheckGroup" class="row w-10" style="display: none;" >
+        <div id="buttonCheckGroup" class="row" style="display: none">
           <div class="col">
-            <button id="hideCheckGroup">Cancelar</button>
+            <button class="btn bnt-sm btn-outline-info" id="hideCheckGroup">
+              Cancelar
+            </button>
           </div>
-          <div class="col">
-            <button id="markAsDonedCheckedGroup">Marcar como hecho</button>
+          <div class="col mt-2">
+            <button
+              class="btn bnt-sm btn-outline-success"
+              id="markAsDonedCheckedGroup"
+            >
+              Marcar como hecho
+            </button>
           </div>
-          <div class="col">
-            <button id="deleteCheckedGroup">Eliminar</button>
+          <div class="col mt-2">
+            <button
+              class="btn bnt-sm btn-outline-danger"
+              id="deleteCheckedGroup"
+            >
+              Eliminar
+            </button>
           </div>
         </div>
         <table id="table" class="table table-sm">

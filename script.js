@@ -1,5 +1,7 @@
 $(document).ready(function () {
     let confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    let confirmDeleteGroupModal = new bootstrap.Modal(document.getElementById('confirmDeleteGroupModal'));
+    let confirMarkAsDonedCheckedGroupModal = new bootstrap.Modal(document.getElementById('confirMarkAsDonedCheckedGroupModal'));
     let confirmDonedModal = new bootstrap.Modal(document.getElementById('confirmDonedModal'));
     let graficModal = new bootstrap.Modal(document.getElementById('graficModal'));
     let myModal = new bootstrap.Modal(document.getElementById('taskModal'));
@@ -379,6 +381,12 @@ $(document).ready(function () {
     })
 
     $('#markAsDonedCheckedGroup').on('click', function () {
+        confirMarkAsDonedCheckedGroupModal.toggle(); idsGroupMarkAsDoned
+        $('#idsGroupMarkAsDoned').text(checkedGroup)
+
+
+    })
+    $('markAsDonedCheckedGroupButton').on('click', function () {
         $.ajax({
             url: 'task-setDoneChekedGroup.php',
             type: 'POST',
@@ -386,10 +394,16 @@ $(document).ready(function () {
             success: function (res) {
                 // console.log(res)
                 performSearch();
+                confirMarkAsDonedCheckedGroupModal.toggle();
+
             }
         })
     })
     $('#deleteCheckedGroup').on('click', function () {
+        confirmDeleteGroupModal.toggle();
+        $('#idsGroupDelete').text(checkedGroup)
+    })
+    $('#deleteGroupButton').on('click', function () {
 
         $.ajax({
             url: 'task-deleteCheckedGroup.php',
@@ -398,6 +412,8 @@ $(document).ready(function () {
             success: function (res) {
                 // console.log(res)
                 performSearch();
+                confirmDeleteGroupModal.toggle();
+
             }
         })
     })

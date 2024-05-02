@@ -8,8 +8,10 @@ $(document).ready(function () {
     let moreResults = false;
     let deleteId = 0;
     let donedId = 0;
-    let grafico; // CANVAS PARA CHART.JS 
+    let graphic; // CANVAS PARA CHART.JS 
     let weeksOffSet = 0;
+    let pressed = false;
+    let timeClick;
 
     // console.log('jquery')
     function performSearch() {
@@ -43,7 +45,8 @@ $(document).ready(function () {
                         if (task['description'].split(' ').length > 5) {
                             truncatedDescription += '...';
                         }
-                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"> <td> ${task['id']} </td>`;
+                        template += `<tr class="table-${task['done'] == 1 ? 'success' : task['type'].toLowerCase()}" data-type="${task['type'].toLowerCase()}"><td> <input class="checkBoxGroup" id="${task['id']}D" type="checkbox" style="display:${pressed?'block':'none'}"></td> `;
+                        template += `<td>${task['id']} </td>`;
                         template += `<td>${task['name']} </td>`;
                         template += `<td>${truncatedDescription} </td>`; // Aquí se utiliza la descripción truncada
                         template += `<td><input id="${task['id']}" type="checkbox"  ${task['done'] == 1 ? "checked" : ""} ${task['done'] == 1 ? "disabled" : ""}> </td>`;
@@ -105,7 +108,7 @@ $(document).ready(function () {
                 type: 'POST',
                 data: { data },
                 success: function (res) {
-                    console.log(res)
+                    // console.log(res)
                     performSearch();
                     clearForm();
                     showUserFeedback(res, true);
@@ -253,7 +256,7 @@ $(document).ready(function () {
         if ($(event.target).hasClass('delete') || $(event.target).is(':checkbox')) {
             return;
         }
-        let id = $(this).find('td:eq(0)').text(); // Obtener el valor de la primera celda (ID)
+        let id = $(this).find('td:eq(1)').text(); // Obtener el valor de la primera celda (ID)
         let data = { id: id };
 
         myModal.toggle();
@@ -303,8 +306,6 @@ $(document).ready(function () {
         showGrafic(++weeksOffSet);
     })
 
-
-
     $('#donedButton').on('click', function () {
         let data = { id: donedId, state: 1 };
         let button = $('button.edit[data-id="' + donedId + '"]');
@@ -330,6 +331,20 @@ $(document).ready(function () {
             }
         })
     })
+
+    $('#tasks').on('mousedown', 'tr', function (event) {
+        pressed = true;
+        timeClick = setTimeout(function () {
+            if (pressed) {
+                // console.log("Click largo detectado!");
+                $('.checkBoxGroup').css('display','block');
+
+            }
+        }, 500); // Cambia 1000 a la cantidad de milisegundos que deseas para definir un click largo
+    });
+
+ 
+
 
     function clearNameErrors() {
         $('#nameErrors').css('display', 'none');
@@ -426,10 +441,10 @@ $(document).ready(function () {
                 };
                 // Crear el gráfico de barras
                 const ctx = document.getElementById("tareasCompletadas").getContext("2d");
-                if (grafico) {
-                    grafico.destroy();
+                if (graphic) {
+                    graphic.destroy();
                 }
-                grafico = new Chart(ctx, {
+                graphic = new Chart(ctx, {
                     type: "bar",
                     data: datos,
                     options: opciones,
